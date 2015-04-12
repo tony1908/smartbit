@@ -1,0 +1,14 @@
+<div class="container">
+	<% @products.each do |product| %>
+                    <h3>Producto:</h3>
+                    <p><%= product.name %></p>
+                    <h3>Descripción:</h3>
+                    <p><%= product.description %></p>
+                    <h3>Precio:</h3>
+                    <p><%= product.price %></p>
+                    
+                    <p><%= image_tag product.photo %></p>
+                   <%= link_to "comprae", :action => "comprado", :id => product.id%>
+                    
+                 <% end %>
+</div>
