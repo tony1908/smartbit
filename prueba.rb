@@ -82,18 +82,21 @@ pa = 0
 #puts (ts.pacf)
 kf = ARIMA.ks(ts, i+3, 1, j+1)
 ra = Random.rand()-Random.rand()
-esti = 282.68*(0.27+kf.ar[0])+276.92*(0.27+kf.ar[1])+281.8*(0.27+kf.ar[2])+ra*kf.ma[0]
+
+esti = arr[30]*(0.3+kf.ar[0])+arr[29]*(0.3+kf.ar[1])+arr[28]*(0.3+kf.ar[2])+ra*kf.ma[0]
 
 while pa == 0
 	json = JSON.parse(response)
 	nu = json[0]
-	if nu['user_id'] == '1' && esti - newY < 0
+	nom = nu['user_id']
+	if nom == '1' && esti - newY < 0
+		
 		puts('baja')
 		@client.messages.create(
 		  from: '+18482202575',
 		  to: '+52 0445585491123',
-		  body: 'Espera un tiempo, la tendecia del bitcoin está a la alza. El precio de mañana se encuentra
-		  alreedor de 249.41728101353021'
+		  body: 'Espera un tiempo, la tendecia del bitcoin para la proxima semana está a la alza. 
+		  El precio de mañana se encuentra alreedor de '+ esti.to_s + ' dolares'
 		  )
 		  pa = 1
 	else
