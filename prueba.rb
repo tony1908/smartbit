@@ -4,10 +4,20 @@ require 'twilio-ruby'
 require 'httparty'
 require 'json'
 require 'http'
-ts = [234.6,234.07,232.5,241.67,243.13,249.08,250,256.26,250.13,250.75,249,243.19,241.06,245.28,240.01,249.75,
-	244.93,245,246.77,245.44,263.36,266.36,257.69,257,256.4,251.5,282.14,286.72,281.9,276.92,282.68].to_ts
-y = [234.6,234.07,232.5,241.67,243.13,249.08,250,256.26,250.13,250.75,249,243.19,241.06,245.28,240.01,249.75,
-	244.93,245,246.77,245.44,263.36,266.36,257.69,257,256.4,251.5,282.14,286.72,281.9,276.92,282.68]	
+
+response2 = HTTP.get('https://data.mexbt.com/trades/btcusd?since=600')
+arr = []
+json2 = JSON.parse(response2)
+for i in 0...31
+	price = json2[i]
+	arr[i] = price['price'].to_f
+end
+ts = arr.to_ts
+
+#ts = [234.6,234.07,232.5,241.67,243.13,249.08,250,256.26,250.13,250.75,249,243.19,241.06,245.28,240.01,249.75,
+#	244.93,245,246.77,245.44,263.36,266.36,257.69,257,256.4,251.5,282.14,286.72,281.9,276.92,282.68].to_ts
+#y = [234.6,234.07,232.5,241.67,243.13,249.08,250,256.26,250.13,250.75,249,243.19,241.06,245.28,240.01,249.75,
+#	244.93,245,246.77,245.44,263.36,266.36,257.69,257,256.4,251.5,282.14,286.72,281.9,276.92,282.68]	
 
 include Statsample::TimeSeries
 
@@ -34,7 +44,7 @@ lineFit = LineFit.new
 
 x = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]
 
-lineFit.setData(x,y)
+lineFit.setData(x,arr)
 
 intercept, slope = lineFit.coefficients
 
@@ -76,22 +86,23 @@ pa = 0
 #puts (ts.pacf)
 kf = ARIMA.ks(ts, i+3, 1, j+1)
 ra = Random.rand()-Random.rand()
-esti = 282.68*(0.25+kf.ar[0])+276.92*(0.25+kf.ar[1])+281.8*(0.25+kf.ar[2])+ra*kf.ma[0]
+esti = 282.68*(0.27+kf.ar[0])+276.92*(0.27+kf.ar[1])+281.8*(0.27+kf.ar[2])+ra*kf.ma[0]
 
 while pa == 0
 	json = JSON.parse(response)
 	nu = json[0]
-	if nu['user_id'] == '1' && esti - newY > 0
-		puts('alza')
+	if nu['user_id'] == '1' && esti - newY < 0
+		puts('baja')
 		@client.messages.create(
 		  from: '+18482202575',
 		  to: '+52 0445585491123',
 		  body: 'Espera un tiempo, la tendecia del bitcoin está a la alza. El precio de mañana se encuentra
-		  alreedor de 279.9304391007197'
+		  alreedor de 249.41728101353021'
 		  )
 		  pa = 1
 	else
-	puts('baja')
+	puts('alza')
+	puts(esti)
 	end
 	
 end
